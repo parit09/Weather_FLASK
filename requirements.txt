@@ -1,0 +1,6 @@
+Flask
+geopy
+timezonefinder
+requests
+pytz
+gunicorn
