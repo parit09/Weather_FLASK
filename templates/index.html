@@ -5,90 +5,217 @@
     <title>Weather App</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            background: linear-gradient(135deg, #89f7fe, #66a6ff);
+            padding: 0;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            height: 100vh;
-            color: #333;
-            animation: fadeIn 1.2s ease-in;
+            justify-content: center;
+            transition: background 1s;
+            position: relative;
+            overflow: hidden;
         }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 0;
+            pointer-events: none;
+            /* Soft vignette and blur effect */
+            background: radial-gradient(ellipse at center, rgba(255,255,255,0.15) 0%, rgba(0,0,0,0.10) 70%, rgba(0,0,0,0.25) 100%);
+            backdrop-filter: blur(2px);
         }
-
-        .weather-box {
-            background: white;
-            padding: 2rem 3rem;
+        body.clear {
+            background: linear-gradient(to bottom, #56ccf2, #2f80ed);
+        }
+        body.rain {
+            background: linear-gradient(to bottom, #314755, #26a0da);
+        }
+        body.clouds {
+            background: linear-gradient(to bottom, #757f9a, #d7dde8);
+        }
+        body.snow {
+            background: linear-gradient(to bottom, #e6dada, #274046);
+        }
+        body.default-bg {
+            background: linear-gradient(to bottom, #3a7bd5, #00d2ff);
+        }
+        .weather-container {
+            background: rgba(255,255,255,0.15);
             border-radius: 20px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-            width: 350px;
+            box-shadow: 0 8px 32px 0 rgba(31,38,135,0.37);
+            padding: 2rem 3rem;
             text-align: center;
+            position: relative;
+            min-width: 320px;
+            z-index: 2;
         }
-
-        .weather-box h1 {
-            margin-bottom: 0.5rem;
-            font-size: 1.8rem;
+        /* Rain animation */
+        .rain {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 1;
         }
-
-        .weather-box input {
-            width: 100%;
-            padding: 10px;
-            font-size: 1rem;
-            margin: 1rem 0;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            transition: 0.3s;
+        .raindrop {
+            position: absolute;
+            width: 2px;
+            height: 15px;
+            background: rgba(174,194,224,0.5);
+            bottom: 100%;
+            animation: rain 1s linear infinite;
         }
-
-        .weather-box input:focus {
-            border-color: #66a6ff;
-            outline: none;
+        @keyframes rain {
+            to { transform: translateY(350px); }
         }
-
-        .weather-box button {
-            background: #66a6ff;
-            color: white;
+        /* Sun animation */
+        .sun {
+            position: absolute;
+            top: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle, #ffe259 60%, #ffa751 100%);
+            border-radius: 50%;
+            box-shadow: 0 0 60px 20px #ffe25988;
+            z-index: 1;
+            animation: sunMove 4s linear infinite alternate;
+        }
+        @keyframes sunMove {
+            0% { top: 40px; }
+            100% { top: 80px; }
+        }
+        /* Cloud animation */
+        .cloud {
+            position: absolute;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 60px;
+            background: #fff;
+            border-radius: 60px;
+            box-shadow: 40px 0 60px 10px #fff, -40px 0 60px 10px #fff;
+            opacity: 0.8;
+            z-index: 1;
+            animation: cloudMove 8s linear infinite alternate;
+        }
+        @keyframes cloudMove {
+            0% { left: 40%; }
+            100% { left: 60%; }
+        }
+        /* Snow animation */
+        .snow {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        .snowflake {
+            position: absolute;
+            color: #fff;
+            font-size: 1.5em;
+            opacity: 0.8;
+            animation: snow 3s linear infinite;
+        }
+        @keyframes snow {
+            to { transform: translateY(350px); }
+        }
+        .weather-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            z-index: 2;
+            position: relative;
+        }
+        .weather-info {
+            z-index: 2;
+            position: relative;
+        }
+        input[type="text"] {
+            padding: 0.5rem;
+            border-radius: 5px;
             border: none;
-            padding: 10px 20px;
-            font-size: 1rem;
-            border-radius: 8px;
+            margin-right: 0.5rem;
+        }
+        button {
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            border: none;
+            background: #3a7bd5;
+            color: white;
             cursor: pointer;
-            transition: background 0.3s;
         }
-
-        .weather-box button:hover {
-            background: #558de8;
-        }
-
-        .result {
-            margin-top: 2rem;
-            font-size: 1.1rem;
-        }
+        .cloud1 { top: 80px; left: 30%; animation-duration: 12s; }
+        .cloud2 { top: 120px; left: 60%; animation-duration: 16s; }
+        .cloud3 { top: 160px; left: 45%; animation-duration: 20s; }
     </style>
 </head>
-<body>
-    <div class="weather-box">
-        <h1>Weather App</h1>
+<body class="{% if weather %}{{ weather.condition|lower }}{% else %}default-bg{% endif %}">
+    <div class="weather-container">
         <form method="POST">
-            <input type="text" name="city" placeholder="Enter City" required>
+            <input type="text" name="city" placeholder="Enter city" required>
             <button type="submit">Get Weather</button>
         </form>
-
         {% if weather %}
-        <div class="result">
-            <p><strong>City:</strong> {{ weather.city }}</p>
-            <p><strong>Condition:</strong> {{ weather.condition }}</p>
-            <p><strong>Description:</strong> {{ weather.description }}</p>
-            <p><strong>Temperature:</strong> {{ weather.temp }}°C</p>
-            <p><strong>Humidity:</strong> {{ weather.humidity }}%</p>
-            <p><strong>Wind Speed:</strong> {{ weather.wind }} m/s</p>
-            <p><strong>Pressure:</strong> {{ weather.pressure }} hPa</p>
+        <div class="weather-info">
+            <div class="weather-icon">
+                {% if weather.condition == 'Rain' %}
+                    🌧
+                {% elif weather.condition == 'Clouds' %}
+                    ☁
+                {% elif weather.condition == 'Clear' %}
+                    ☀
+                {% elif weather.condition == 'Snow' %}
+                    ❄
+                {% else %}
+                    🌡
+                {% endif %}
+            </div>
+            <h2>{{ weather.city }}</h2>
+            <p>{{ weather.condition }} - {{ weather.description }}</p>
+            <p>Temperature: {{ weather.temp }}°C</p>
+            <p>Humidity: {{ weather.humidity }}%</p>
+            <p>Wind: {{ weather.wind }} m/s</p>
+            <p>Pressure: {{ weather.pressure }} hPa</p>
+            <p>Local Time: {{ weather.time }}</p>
         </div>
+        <!-- Weather Animations -->
+        {% if weather.condition == 'Rain' %}
+        <div class="rain" id="rain"></div>
+        <script>
+            const rain = document.getElementById('rain');
+            for(let i=0; i<50; i++) {
+                let drop = document.createElement('div');
+                drop.className = 'raindrop';
+                drop.style.left = Math.random()*100 + '%';
+                drop.style.animationDelay = Math.random() + 's';
+                drop.style.height = (10 + Math.random()*20) + 'px';
+                rain.appendChild(drop);
+            }
+        </script>
+        {% elif weather.condition == 'Clear' %}
+        <div class="sun"></div>
+        {% elif weather.condition == 'Clouds' %}
+        <div class="cloud cloud1"></div>
+        <div class="cloud cloud2"></div>
+        <div class="cloud cloud3"></div>
+        {% elif weather.condition == 'Snow' %}
+        <div class="snow" id="snow"></div>
+        <script>
+            const snow = document.getElementById('snow');
+            for(let i=0; i<40; i++) {
+                let flake = document.createElement('div');
+                flake.className = 'snowflake';
+                flake.innerHTML = '❄';
+                flake.style.left = Math.random()*100 + '%';
+                flake.style.animationDelay = Math.random() + 's';
+                snow.appendChild(flake);
+            }
+        </script>
+        {% endif %}
         {% endif %}
     </div>
 </body>
